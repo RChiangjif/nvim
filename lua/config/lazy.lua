@@ -1,10 +1,9 @@
 -- Bootstrap lazy.nvim, then load every spec file under lua/plugins/.
 -- Adding a plugin later means adding one file there - nothing here changes.
 
-local uv = vim.uv or vim.loop
 local lazypath = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "lazy.nvim")
 
-if not uv.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   local out = vim.fn.system({
     "git",
     "clone",

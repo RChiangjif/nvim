@@ -14,6 +14,12 @@ vim.opt.termguicolors = true
 -- autoread is what turns that into an automatic buffer refresh.
 vim.opt.autoread = true
 
+-- Closing a window otherwise makes nvim re-split the freed columns evenly
+-- across everything left, so dismissing nvim-tree or the cheatsheet would
+-- blow the 30-column inp/outp panes up to a third of the screen each.
+-- Windows now keep whatever width they were given.
+vim.opt.equalalways = false
+
 -- Required by nvim-tree / oil: disable the built-in netrw explorer.
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1

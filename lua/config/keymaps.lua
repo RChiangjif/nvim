@@ -1,5 +1,6 @@
 local P = require("config.platform")
 local runner = require("config.runner")
+local cheatsheet = require("config.cheatsheet")
 
 local map = vim.keymap.set
 
@@ -27,6 +28,13 @@ map("n", "<leader>m", "<CMD>Oil --float<CR>", { desc = "Open parent directory (O
 map("n", "<leader>e", runner.toggle_io_panes, { desc = "Toggle inp.txt / outp.txt panes" })
 map("n", "<C-e>", runner.toggle_io_panes, { desc = "Toggle inp.txt / outp.txt panes" })
 map("n", "<leader>c", runner.run, { desc = "Compile and run current file" })
+map("n", "<leader>C", function()
+  runner.run({ untimed = true })
+end, { desc = "Compile and run with no timeout" })
+map("n", "<leader>s", runner.stop, { desc = "Stop the running program" })
+
+-- Keymap cheatsheet sidebar. Lists itself too, by virtue of having a desc.
+map("n", "<leader>k", cheatsheet.toggle, { desc = "Toggle keymap cheatsheet" })
 
 -- GitHub Copilot toggle.
 -- Reads and writes g:copilot_enabled directly, which is all `:Copilot

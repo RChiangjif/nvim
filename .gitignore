@@ -4,5 +4,4 @@ lua/config/local.lua
 # Claude Code local state
 .claude/
 
-init.lua.bak
 *.log
