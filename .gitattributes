@@ -1,0 +1,2 @@
+# Keep LF in the repo so the same checkout is clean on macOS and Windows.
+* text=auto eol=lf
