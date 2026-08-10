@@ -33,8 +33,10 @@ M.cc = first_exe({ "gcc-16", "gcc-15", "gcc-14", "gcc", "clang" })
 
 -- Order matters on Windows: python3.exe there is a 0-byte Microsoft Store
 -- stub. executable() returns 1 for it, but running it opens the Store and
--- hangs. Always prefer plain `python` on Windows.
-M.py = M.is_win and first_exe({ "python", "py", "python3" })
-  or first_exe({ "python3", "python" })
+-- hangs. Always prefer plain `python` on Windows, and never fall back to
+-- python3 there - hence picking the candidate list first, rather than an
+-- `is_win and first_exe(...) or first_exe(...)` chain, which would slip into
+-- the right-hand branch whenever the Windows probe came up empty.
+M.py = first_exe(M.is_win and { "python", "py" } or { "python3", "python" })
 
 return M

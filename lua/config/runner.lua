@@ -48,8 +48,13 @@ end
 ---against nvim's cwd, which is not necessarily the compile cwd.
 local function to_quickfix(stderr, basename, abspath)
   local lines = {}
+  -- Function replacement, not a string: a `%` anywhere in abspath would
+  -- otherwise be read as a capture reference and silently eaten.
+  local function absolute()
+    return abspath .. ":"
+  end
   for _, line in ipairs(vim.split(stderr, "\n", { trimempty = true })) do
-    lines[#lines + 1] = (line:gsub("^" .. vim.pesc(basename) .. ":", abspath .. ":"))
+    lines[#lines + 1] = (line:gsub("^" .. vim.pesc(basename) .. ":", absolute))
   end
   vim.fn.setqflist({}, " ", { title = "compile", lines = lines, efm = vim.o.errorformat })
   vim.cmd("copen")
@@ -91,6 +96,8 @@ end
 
 ---Execute the program and pipe stdout into outp.txt.
 local function execute(rule, dir, stdin)
+  local started = (vim.uv or vim.loop).hrtime()
+
   vim.system(rule.run, {
     cwd = dir,
     stdin = stdin,
@@ -98,16 +105,37 @@ local function execute(rule, dir, stdin)
     timeout = M.timeout_ms,
   }, function(res)
     vim.schedule(function()
-      -- A timeout kills the process with a signal rather than a clean exit.
-      if res.signal ~= 0 then
-        notify(("Killed after %ds - infinite loop?"):format(M.timeout_ms / 1000), vim.log.levels.WARN)
+      -- Whatever the program managed to print before dying is still useful,
+      -- so write the output first and diagnose afterwards.
+      --
+      -- Trailing "\n" on stdout splits into a final empty string, which
+      -- writefile would turn into a spurious blank line in outp.txt.
+      -- Note the explicit `dir`: recomputing the path from the current
+      -- buffer here would land outp.txt in the wrong folder whenever the
+      -- user switched buffers while the program was still running.
+      local out = vim.split(res.stdout or "", "\n")
+      if out[#out] == "" then
+        out[#out] = nil
       end
-
-      vim.fn.writefile(vim.split(res.stdout or "", "\n"), M.outp_path())
+      vim.fn.writefile(out, dir .. "/outp.txt")
       vim.cmd("silent! checktime")
 
-      if res.code ~= 0 and res.signal == 0 then
+      local ms = ((vim.uv or vim.loop).hrtime() - started) / 1e6
+
+      -- vim.system reports a timeout as code 124 (like GNU timeout), and
+      -- signals it with SIGTERM. Any *other* signal is the program itself
+      -- crashing - SIGSEGV on an out-of-bounds index being the classic one -
+      -- and must not be described as a timeout.
+      if res.code == 124 then
+        notify(("Killed after %ds - infinite loop?"):format(M.timeout_ms / 1000), vim.log.levels.WARN)
+      elseif res.signal ~= 0 then
+        notify(("Crashed with signal %d\n%s"):format(res.signal, res.stderr or ""), vim.log.levels.ERROR)
+      elseif res.code ~= 0 then
         notify(("Exited with code %d\n%s"):format(res.code, res.stderr or ""), vim.log.levels.WARN)
+      else
+        -- Success used to be completely silent, which is indistinguishable
+        -- from the keymap never firing when no outp.txt pane is on screen.
+        notify(("Done in %d ms"):format(ms))
       end
     end)
   end)
@@ -121,7 +149,10 @@ function M.run()
 
   -- The old `:!` path relied on 'autowrite' saving implicitly. Going async
   -- means we have to write explicitly, or we compile a stale file.
-  vim.cmd("silent! write")
+  -- `wall`, not `write`: stdin is read back off disk, so an inp.txt edited
+  -- in the <leader>e pane and left unsaved would otherwise run against its
+  -- previous contents.
+  vim.cmd("silent! wall")
 
   local ext = vim.fn.expand("%:e")
   local basename = vim.fn.expand("%:t")
@@ -159,6 +190,36 @@ function M.open_io_panes()
   vim.cmd("wincmd l")
   vim.cmd(("30vsplit %s"):format(vim.fn.fnameescape(M.inp_path())))
   vim.cmd("wincmd l")
+end
+
+---Every window in the current tab showing an inp.txt / outp.txt buffer.
+---Matched on basename rather than full path: the point of the toggle is to
+---clear the panes off the screen, including ones left over from a problem in
+---another directory.
+local function io_windows()
+  local wins = {}
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local base = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win)), ":t")
+    if base == "inp.txt" or base == "outp.txt" then
+      wins[#wins + 1] = win
+    end
+  end
+  return wins
+end
+
+---Show the panes if hidden, hide them if shown. Bound to <C-e>.
+---Hiding only closes the windows - the buffers stay loaded, so unsaved test
+---data survives, and `wall` in M.run() still flushes it before the next run.
+function M.toggle_io_panes()
+  local open = io_windows()
+  if #open == 0 then
+    return M.open_io_panes()
+  end
+  for _, win in ipairs(open) do
+    -- pcall: closing the very last window of a tab is an error, so a layout
+    -- that is nothing but I/O panes keeps whatever it cannot close.
+    pcall(vim.api.nvim_win_close, win, false)
+  end
 end
 
 return M
