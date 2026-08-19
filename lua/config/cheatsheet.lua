@@ -27,7 +27,7 @@ local SECTIONS = {
   { name = "Find", match = { "^ f" } },
   { name = "Files", match = { "^ n$", "^ m$", "^ h$" } },
   { name = "Clipboard", match = { "^ p$", "^ y$" } },
-  { name = "AI", match = { "^ o$" } },
+  { name = "AI", match = { "^ a$" } },
   { name = "Help", match = { "^ k$" } },
 }
 

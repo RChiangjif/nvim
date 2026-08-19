@@ -17,9 +17,9 @@ map("n", "<leader>h", function()
   vim.cmd("tabedit " .. vim.fn.fnameescape(P.config_dir))
 end, { desc = "Open nvim config directory in a new tab" })
 
--- File explorers
-map("n", "<leader>n", "<CMD>NvimTreeToggle<CR>", { desc = "Toggle nvim-tree" })
-map("n", "<leader>m", "<CMD>Oil --float<CR>", { desc = "Open parent directory (Oil)" })
+-- File explorer
+map("n", "<leader>n", "<CMD>Neiltree --sidebar<CR>", { desc = "Toggle neiltree sidebar" })
+map("n", "<leader>m", "<CMD>Neiltree --float<CR>", { desc = "Open neiltree (float)" })
 
 -- Competitive programming
 -- Both keys toggle; <C-e> is the quick one, <leader>e the mnemonic. Toggling
@@ -36,20 +36,12 @@ map("n", "<leader>s", runner.stop, { desc = "Stop the running program" })
 -- Keymap cheatsheet sidebar. Lists itself too, by virtue of having a desc.
 map("n", "<leader>k", cheatsheet.toggle, { desc = "Toggle keymap cheatsheet" })
 
--- GitHub Copilot toggle.
--- Reads and writes g:copilot_enabled directly, which is all `:Copilot
--- enable`/`disable` do. Two reasons not to go through them:
---   * the command only exists after the plugin lazy-loads on InsertEnter,
---     so <leader>o in a fresh session would error;
---   * copilot#Enabled() folds in per-buffer and per-filetype state, so it
---     reads 0 in a buffer Copilot skips even when it is globally on - the
---     toggle would then only ever say "enabled".
-map("n", "<leader>o", function()
-  -- Unset means on: that is copilot.vim's own default for this variable.
-  local on = vim.g.copilot_enabled
-  if on == nil then
-    on = 1
-  end
-  vim.g.copilot_enabled = on == 1 and 0 or 1
-  vim.notify("Copilot " .. (vim.g.copilot_enabled == 1 and "enabled" or "disabled"))
-end, { desc = "Toggle GitHub Copilot" })
+-- Claude Code terminal. auto_start = false (see plugins/claudecode.lua) keeps
+-- it fully idle until this toggles the window open.
+map("n", "<leader>a", "<CMD>ClaudeCode<CR>", { desc = "Toggle Claude Code" })
+
+-- Terminal mode intercepts <C-w> as a literal keystroke, unlike normal mode
+-- where it starts a window command. Escaping to normal mode first restores
+-- the usual <C-w> h/j/k/l/w behavior from inside any :terminal buffer,
+-- including the Claude Code window.
+map("t", "<C-w>", [[<C-\><C-n><C-w>]], { desc = "Window commands from terminal mode" })
