@@ -18,7 +18,11 @@ git clone https://github.com/RChiangjif/nvim.git $env:LOCALAPPDATA\nvim
 ```
 
 Start `nvim`. lazy.nvim bootstraps itself and installs the plugins pinned in
-`lazy-lock.json`. Run `:Copilot setup` once per machine to sign in.
+`lazy-lock.json`.
+
+The file explorer is [neiltree](https://github.com/RChiangjif/neiltree), loaded
+from a local checkout. Clone it and point `dir` in `lua/plugins/files.lua` at
+your copy, or the config will not start.
 
 ### Optional tools
 
@@ -28,6 +32,7 @@ Start `nvim`. lazy.nvim bootstraps itself and installs the plugins pinned in
 | fd | faster `<leader>ff` | `brew install fd` / `winget install sharkdp.fd` |
 | g++ / gcc | running C and C++ | Xcode CLT or Homebrew / MSYS2 or MinGW |
 | python3 | running Python | python.org or Homebrew |
+| claude | `<leader>a` Claude Code | `npm i -g @anthropic-ai/claude-code` |
 
 Compilers are probed at startup, newest first (`g++-16` down to `clang++`), so
 a Homebrew version bump needs no edit.
@@ -44,12 +49,16 @@ the real keymap table, so it never goes stale.
 | `<leader>s` | Stop the running program |
 | `<leader>e` / `<C-e>` | Toggle the `inp.txt` / `outp.txt` panes |
 | `<leader>k` | Toggle the keymap cheatsheet |
-| `<leader>n` | Toggle nvim-tree |
-| `<leader>m` | Open the parent directory in Oil |
+| `<leader>n` | Toggle the neiltree sidebar |
+| `<leader>m` | Open neiltree in a floating window |
 | `<leader>h` | Open this config in a new tab |
-| `<leader>o` | Toggle GitHub Copilot (starts disabled) |
+| `<leader>a` | Toggle Claude Code |
 | `<leader>p` / `<leader>y` | Paste from / yank to the system clipboard |
 | `<leader>ff` `fg` `fb` `fh` | Telescope files, grep, buffers, help |
+| `<C-w>` in terminal mode | Window commands from inside any `:terminal` |
+
+Oil is still installed for editing a directory as a buffer, but has no mapping
+of its own — reach it with `:Oil`.
 
 ## Running a solution
 
