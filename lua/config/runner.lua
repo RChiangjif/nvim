@@ -311,7 +311,7 @@ function M.stop()
 end
 
 ---Open the inp.txt / outp.txt side panes.
----winfixwidth on both: 'equalalways' is already off, but nvim-tree resizes
+---winfixwidth on both: 'equalalways' is already off, but neiltree resizes
 ---its neighbours on open and close under its own steam. Pinning the width is
 ---what actually holds these two at M.pane_width no matter what comes and goes
 ---beside them.

@@ -57,9 +57,6 @@ the real keymap table, so it never goes stale.
 | `<leader>ff` `fg` `fb` `fh` | Telescope files, grep, buffers, help |
 | `<C-w>` in terminal mode | Window commands from inside any `:terminal` |
 
-Oil is still installed for editing a directory as a buffer, but has no mapping
-of its own — reach it with `:Oil`.
-
 ## Running a solution
 
 `<leader>c` saves every buffer, compiles the current file, feeds it `inp.txt`

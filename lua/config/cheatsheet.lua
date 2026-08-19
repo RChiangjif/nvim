@@ -209,7 +209,7 @@ function M.open()
   -- Two tabs could hold a sheet at once, and a duplicate name is an error.
   pcall(vim.api.nvim_buf_set_name, buf, "cheatsheet://keymaps")
 
-  -- Right-hand side, so it does not fight nvim-tree for the left gutter.
+  -- Right-hand side, so it does not fight neiltree for the left gutter.
   vim.cmd("botright vsplit")
   local win = vim.api.nvim_get_current_win()
   vim.api.nvim_win_set_buf(win, buf)
