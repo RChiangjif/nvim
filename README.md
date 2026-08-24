@@ -20,9 +20,11 @@ git clone https://github.com/RChiangjif/nvim.git $env:LOCALAPPDATA\nvim
 Start `nvim`. lazy.nvim bootstraps itself and installs the plugins pinned in
 `lazy-lock.json`.
 
-The file explorer is [neiltree](https://github.com/RChiangjif/neiltree), loaded
-from a local checkout. Clone it and point `dir` in `lua/plugins/files.lua` at
-your copy, or the config will not start.
+The file explorer is [neiltree](https://github.com/RChiangjif/neiltree),
+installed from GitHub like every other plugin - nothing to set up per machine.
+Its sidebar opens on startup with the cursor left in your file; `<leader>n`
+closes it. Sessions that have no use for a file tree - `nvim -d`, a buffer
+piped in on stdin, a git commit message - start without it.
 
 ### Optional tools
 
