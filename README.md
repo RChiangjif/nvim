@@ -54,9 +54,13 @@ the real keymap table, so it never goes stale.
 | `<leader>n` | Toggle the neiltree sidebar |
 | `<leader>m` | Open neiltree in a floating window |
 | `<leader>h` | Open this config in a new tab |
+| `<leader>t` | Go to the next tab |
 | `<leader>a` | Toggle Claude Code |
 | `<leader>p` / `<leader>y` | Paste from / yank to the system clipboard |
 | `<leader>ff` `fg` `fb` `fh` | Telescope files, grep, buffers, help |
+| `<Tab>` in terminal mode | Ask the shell to complete the current command |
+| `<C-\><C-n>` in terminal mode | Enter Terminal-Normal mode |
+| `<C-w>h` / `<C-w>l` | Move left/right; cross the edge to the previous/next tab |
 | `<C-w>` in terminal mode | Window commands from inside any `:terminal` |
 
 ## Running a solution
