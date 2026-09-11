@@ -20,6 +20,10 @@ git clone https://github.com/RChiangjif/nvim.git $env:LOCALAPPDATA\nvim
 Start `nvim`. lazy.nvim bootstraps itself and installs the plugins pinned in
 `lazy-lock.json`.
 
+Plugins named in the `_auto_update` list at the top of `lazy-lock.json` update
+silently in the background whenever an interactive Nvim session starts. Use
+the plugin names already present in the lockfile; an empty list disables it.
+
 The file explorer is [neiltree](https://github.com/RChiangjif/neiltree),
 installed from GitHub like every other plugin - nothing to set up per machine.
 Its sidebar opens on startup with the cursor left in your file; `<leader>n`
